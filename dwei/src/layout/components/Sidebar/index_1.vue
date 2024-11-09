@@ -1,0 +1,81 @@
+<template>
+  <div :class="{'has-logo':showLogo}">
+    <logo v-if="showLogo" :collapse="isCollapse" />
+    <el-scrollbar wrap-class="scrollbar-wrapper">
+      <el-menu
+        :default-active="activeMenu"
+        :collapse="isCollapse"
+        background-color="rgba(64, 200, 212, 0)"
+        text-color="#bfcbd9"
+        style="font-weight:600;letter-spacing: 1px;"
+        :unique-opened="false"
+        active-text-color="#409EFF"
+        :collapse-transition="false"
+        mode="vertical"
+        class="name"
+      >
+        <sidebar-item v-for="route in userInfoStore.menuRoutes" :key="route.path" 
+          :item="route" :base-path="route.path" />
+      </el-menu>
+    </el-scrollbar>
+  </div>
+</template>
+
+<script lang="ts">
+  export default {
+    name: 'Sidebar'
+  }
+</script>
+
+<script lang="ts" setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import Logo from './Logo.vue'
+import SidebarItem from './SidebarItem.vue'
+import { useAppStore } from '@/stores/app'
+import { useUserInfoStore } from '@/stores/userInfo'
+import { useSettingsStore } from '@/stores/settings'
+
+const route = useRoute()
+const settingsStore = useSettingsStore()
+const appStore = useAppStore()
+const userInfoStore = useUserInfoStore()
+
+const activeMenu = computed(() => {
+  const { meta, path } = route
+  if (meta.activeMenu) {
+    return meta.activeMenu as string
+  }
+  return path
+})
+
+const showLogo = computed(() => settingsStore.sidebarLogo)
+const isCollapse = computed(() => !appStore.sidebar.opened)
+
+</script>
+<style lang="less" scoped>
+     :deep(.el-menu){
+     :deep(.el-sub-menu__title):hover{
+        background: none;
+     }
+     :deep(.el-menu-item):hover{
+         background: #2061a1 !important;
+       }
+       
+       .el-menu-item{
+         width: 95%;
+         margin: auto;
+         height: 50px;
+         background: #fff;
+         border-radius: 10px;
+         margin-top: 10px;
+         color: black;
+       }
+      .el-menu-item.is-active{
+            color: rgb(37, 134, 231);
+            font-weight: 900;
+            background: rgba(92, 210, 234, 0.5);
+       }
+
+  }
+</style>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hml.mapper.LeaveMapper">
+
+
+    <select id="getList" resultType="com.hml.domain.Leave">
+        SELECT
+            t.id,
+        t.user_id,
+        t.type_id,
+            t1.`name`,
+            t2.`name` AS typeName,
+            start_date,
+            end_date,
+            t.status
+        FROM
+            `leaves` t
+                LEFT JOIN `user` t1 ON t.user_id = t1.id
+                LEFT JOIN leave_type t2 ON t.type_id = t2.id
+        <where>
+             <if test="leave.name != null and leave.name != '' ">
+                 t1.name like concat('%',#{leave.name},'%')
+            </if>
+            <if test="leave.typeName != null and leave.typeName != '' ">
+               and  t2.name = #{leave.typeName}
+            </if>
+            <if test="leave.status != null and leave.status != '' ">
+                and status = #{leave.status}
+            </if>
+            <if test="leave.userId != null and leave.userId != '' ">
+                and t.user_id = #{leave.userId}
+            </if>
+        </where>
+    </select>
+    <select id="getOneBy" resultType="com.hml.domain.Leave">
+
+        SELECT
+        t.id,
+        t1.`name`,
+        t2.`name` AS typeName,
+        start_date,
+        end_date,
+        'status'
+        FROM
+        `leaves` t
+        LEFT JOIN `user` t1 ON t.user_id = t1.id
+        LEFT JOIN leave_type t2 ON t.type_id = t2.id
+        where
+            t.id=#{id}
+    </select>
+</mapper>
